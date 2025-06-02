@@ -9,7 +9,7 @@ LIB_OBJ = $(patsubst code/libs/src/%.c, code/libs/obj/%.o, $(LIB_SRC))
 ###################################
 default: from_scratch
 
-from_scratch: lib_build clean build
+from_scratch: clean build
 ###################################
 
 ###################################
