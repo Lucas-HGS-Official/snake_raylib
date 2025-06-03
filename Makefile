@@ -15,7 +15,7 @@ from_scratch: clean build
 ###################################
 # Build Game
 ###################################
-build: lib_copy $(TARGET)
+build: $(TARGET)
 
 $(TARGET): $(OBJ)
 	gcc -o $@ $? -Wall -std=c99 -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
