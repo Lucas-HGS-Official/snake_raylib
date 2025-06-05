@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include "stddef.h"
 
 #define SCREEN_WIDTH 1200
@@ -19,6 +20,7 @@ State state = {0};
 void update() {
 
 }
+
 int draw() {
     ClearBackground(RAYWHITE);
 
@@ -41,11 +43,36 @@ int draw() {
 
     return 0;
 }
+
+int spawn_food() {
+    while(true) {
+        float x = GetRandomValue(0, GRID_SIZE - 1);
+        float y = GetRandomValue(0, GRID_SIZE - 1);
+        state.food = (Vector2) { x, y };
+
+        bool isFoodEaten = false;
+
+        for(size_t i = 0; i < state.count; i++) {
+            Vector2 currSnake = state.snake[i];
+            if(Vector2Equals(currSnake, state.food)) {
+                isFoodEaten = true;
+                break;
+            }
+        }
+        if(!isFoodEaten) {
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
 int init_game() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
     SetTargetFPS(60);
 
     state.food = (Vector2) { 0 };
+    spawn_food();
     state.snake[0] = (Vector2) { 3, 3 };
     state.direction = (Vector2) { 1, 0 };
     state.count = 1;
