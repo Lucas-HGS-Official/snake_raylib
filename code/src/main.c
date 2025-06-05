@@ -28,8 +28,15 @@ int draw() {
         }
     }
 
-    for(size_t i = 0; i < GRID_SIZE; i++) {
-        
+    DrawRectangleV((Vector2) { state.food.x * (GRID + GRID_SPACE) + MARGIN, state.food.y * (GRID + GRID_SPACE) + MARGIN }, (Vector2) { GRID, GRID }, RED);
+
+    for(size_t i = 0; i < state.count; i++) {
+        Vector2 currSnake = state.snake[i];
+        if(i == 0) {
+            DrawRectangleV((Vector2) { currSnake.x * (GRID + GRID_SPACE) + MARGIN, currSnake.y * (GRID + GRID_SPACE) + MARGIN }, (Vector2) { GRID, GRID }, DARKBLUE);
+            continue;
+        }
+        DrawRectangleV((Vector2) { currSnake.x * (GRID + GRID_SPACE) + MARGIN, currSnake.y * (GRID + GRID_SPACE) + MARGIN }, (Vector2) { GRID, GRID }, GRAY);
     }
 
     return 0;
@@ -41,6 +48,7 @@ int init_game() {
     state.food = (Vector2) { 0 };
     state.snake[0] = (Vector2) { 3, 3 };
     state.direction = (Vector2) { 1, 0 };
+    state.count = 1;
 
     return 0;
 }
