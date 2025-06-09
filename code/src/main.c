@@ -18,7 +18,12 @@ typedef struct {
 State state = {0};
 
 void update() {
+    Vector2 head = state.snake[0];
+    for(size_t i = state.count -1; i < 0; i++) {
+        state.snake[i] = state.snake[i -1];
+    }
 
+    state.snake[0] = Vector2Add(head, state.direction);
 }
 
 int draw() {
@@ -92,6 +97,24 @@ int init_game() {
     return 0;
 }
 
+void get_input() {
+    if(IsKeyPressed(KEY_A) && state.direction.x != 1) {
+        state.direction = (Vector2) { -1, 0 };
+    }
+
+    if(IsKeyPressed(KEY_D) && state.direction.x != -1) {
+        state.direction = (Vector2) { 1, 0 };
+    }
+
+    if(IsKeyPressed(KEY_W) && state.direction.y != 1) {
+        state.direction = (Vector2) { 0, -1 };
+    }
+
+    if(IsKeyPressed(KEY_S) && state.direction.y != -1) {
+        state.direction = (Vector2) { 0, 1 };
+    }
+}
+
 int main(void) {
     init_game();
 
@@ -101,6 +124,7 @@ int main(void) {
             if(should_update(0.5)) {
                 update();
             }
+            get_input();
             draw();
         }
         EndDrawing();
