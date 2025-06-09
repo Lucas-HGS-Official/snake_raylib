@@ -44,6 +44,18 @@ int draw() {
     return 0;
 }
 
+double lastUpdate = 0;
+bool should_update(float seconds) {
+    double currTime = GetTime();
+    if(currTime - lastUpdate > seconds) {
+        lastUpdate = currTime;
+        
+        return true;
+    }
+
+    return false;
+}
+
 int spawn_food() {
     while(true) {
         float x = GetRandomValue(0, GRID_SIZE - 1);
@@ -86,7 +98,9 @@ int main(void) {
     while(!WindowShouldClose()) {
         BeginDrawing();
         {
-            update();
+            if(should_update(0.5)) {
+                update();
+            }
             draw();
         }
         EndDrawing();
