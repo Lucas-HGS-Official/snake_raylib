@@ -17,9 +17,28 @@ typedef struct {
 } State;
 State state = {0};
 
+int init_game();
+int spawn_food();
+int draw();
+bool should_update(float seconds);
+void get_input();
+void update();
+
 void update() {
     Vector2 head = state.snake[0];
-    for(size_t i = state.count -1; i < 0; i++) {
+
+    if(Vector2Equals(head, state.food)) {
+        for(size_t i = state.count; i > 0; i--) {
+            state.snake[i] = state.snake[i -1];
+        }
+        state.count++;
+
+        state.snake[0] = Vector2Add(head, state.direction);
+        spawn_food();
+        return;
+    }
+
+    for(size_t i = state.count -1; i > 0; i--) {
         state.snake[i] = state.snake[i -1];
     }
 
@@ -43,7 +62,7 @@ int draw() {
             DrawRectangleV((Vector2) { currSnake.x * (GRID + GRID_SPACE) + MARGIN, currSnake.y * (GRID + GRID_SPACE) + MARGIN }, (Vector2) { GRID, GRID }, DARKBLUE);
             continue;
         }
-        DrawRectangleV((Vector2) { currSnake.x * (GRID + GRID_SPACE) + MARGIN, currSnake.y * (GRID + GRID_SPACE) + MARGIN }, (Vector2) { GRID, GRID }, GRAY);
+        DrawRectangleV((Vector2) { currSnake.x * (GRID + GRID_SPACE) + MARGIN, currSnake.y * (GRID + GRID_SPACE) + MARGIN }, (Vector2) { GRID, GRID }, BLUE);
     }
 
     return 0;
@@ -121,7 +140,7 @@ int main(void) {
     while(!WindowShouldClose()) {
         BeginDrawing();
         {
-            if(should_update(0.5)) {
+            if(should_update(0.3)) {
                 update();
             }
             get_input();
