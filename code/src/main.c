@@ -23,6 +23,31 @@ int draw();
 bool should_update(float seconds);
 void get_input();
 void update();
+void check_collision();
+
+void check_collision() {
+    Vector2 head = state.snake[0];
+    for(size_t i = 1; i < state.count; i++) {
+        Vector2 currSnake = state.snake[i];
+        if(Vector2Equals(currSnake, head)) {
+            init_game();
+
+            return;
+        }
+    }
+
+    if(head.x < 0 || head.x > GRID_SIZE-1) {
+        init_game();
+        
+        return;
+    }
+
+    if(head.y < 0 || head.y > GRID_SIZE-1) {
+        init_game();
+
+        return;
+    }
+}
 
 void update() {
     Vector2 head = state.snake[0];
@@ -43,6 +68,8 @@ void update() {
     }
 
     state.snake[0] = Vector2Add(head, state.direction);
+
+    check_collision();
 }
 
 int draw() {
@@ -104,9 +131,6 @@ int spawn_food() {
 }
 
 int init_game() {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
-    SetTargetFPS(60);
-
     state.food = (Vector2) { 0 };
     spawn_food();
     state.snake[0] = (Vector2) { 3, 3 };
@@ -135,6 +159,9 @@ void get_input() {
 }
 
 int main(void) {
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
+    SetTargetFPS(60);
+
     init_game();
 
     while(!WindowShouldClose()) {
