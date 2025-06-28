@@ -25,6 +25,31 @@ void get_input();
 void update();
 void check_collision();
 
+double lastUpdate = 0;
+
+int main(void) {
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
+    SetTargetFPS(60);
+
+    init_game();
+
+    while(!WindowShouldClose()) {
+        BeginDrawing();
+        {
+            if(should_update(0.3)) {
+                update();
+            }
+            get_input();
+            draw();
+        }
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}
+
+
 void check_collision() {
     Vector2 head = state.snake[0];
     for(size_t i = 1; i < state.count; i++) {
@@ -95,7 +120,6 @@ int draw() {
     return 0;
 }
 
-double lastUpdate = 0;
 bool should_update(float seconds) {
     double currTime = GetTime();
     if(currTime - lastUpdate > seconds) {
@@ -156,26 +180,4 @@ void get_input() {
     if(IsKeyPressed(KEY_S) && state.direction.y != -1) {
         state.direction = (Vector2) { 0, 1 };
     }
-}
-
-int main(void) {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
-    SetTargetFPS(60);
-
-    init_game();
-
-    while(!WindowShouldClose()) {
-        BeginDrawing();
-        {
-            if(should_update(0.3)) {
-                update();
-            }
-            get_input();
-            draw();
-        }
-        EndDrawing();
-    }
-
-    CloseWindow();
-    return 0;
 }
