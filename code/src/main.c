@@ -1,3 +1,7 @@
+#define CLAY_IMPLEMENTATION
+#include "clay.h"
+#include "clay_renderer_raylib.c"
+
 #include "raylib.h"
 #include "raymath.h"
 #include "stddef.h"
@@ -26,6 +30,7 @@ void update(void);
 void check_collision(void);
 void init_raylib_window(void);
 void init_game_and_window(void);
+void HandleClayErrors(Clay_ErrorData errorData);
 
 double lastUpdate = 0;
 
@@ -43,9 +48,8 @@ int main(void) {
         }
         EndDrawing();
     }
-
-    CloseWindow();
-
+    Clay_Raylib_Close();
+    
     return 0;
 }
 
@@ -184,11 +188,24 @@ void get_input(void) {
 }
 
 void init_raylib_window(void) {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
+    Clay_Raylib_Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib", FLAG_WINDOW_RESIZABLE);
+    uint64_t clayRequiredMemory = Clay_MinMemorySize();
+    Clay_Arena clayMemory = (Clay_Arena) {
+        .memory = malloc(clayRequiredMemory),
+        .capacity = clayRequiredMemory,
+    };
+    Clay_Initialize(clayMemory, (Clay_Dimensions) {
+        .height = GetScreenHeight(),
+        .width = GetScreenWidth(),
+    }, (Clay_ErrorHandler) { HandleClayErrors });
     SetTargetFPS(60);
 }
 
 void init_game_and_window(void) {
     init_raylib_window();
     init_game();
+}
+
+void HandleClayErrors(Clay_ErrorData errorData) {
+    printf("%s", errorData.errorText.chars);
 }
