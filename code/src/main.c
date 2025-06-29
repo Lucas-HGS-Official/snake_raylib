@@ -17,21 +17,20 @@ typedef struct {
 } State;
 State state = {0};
 
-int init_game();
-int spawn_food();
-int draw();
+int init_game(void);
+int spawn_food(void);
+int draw(void);
 bool should_update(float seconds);
-void get_input();
-void update();
-void check_collision();
+void get_input(void);
+void update(void);
+void check_collision(void);
+void init_raylib_window(void);
+void init_game_and_window(void);
 
 double lastUpdate = 0;
 
 int main(void) {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
-    SetTargetFPS(60);
-
-    init_game();
+    init_game_and_window();
 
     while(!WindowShouldClose()) {
         BeginDrawing();
@@ -46,11 +45,12 @@ int main(void) {
     }
 
     CloseWindow();
+
     return 0;
 }
 
 
-void check_collision() {
+void check_collision(void) {
     Vector2 head = state.snake[0];
     for(size_t i = 1; i < state.count; i++) {
         Vector2 currSnake = state.snake[i];
@@ -74,7 +74,7 @@ void check_collision() {
     }
 }
 
-void update() {
+void update(void) {
     Vector2 head = state.snake[0];
 
     if(Vector2Equals(head, state.food)) {
@@ -85,6 +85,7 @@ void update() {
 
         state.snake[0] = Vector2Add(head, state.direction);
         spawn_food();
+
         return;
     }
 
@@ -97,7 +98,7 @@ void update() {
     check_collision();
 }
 
-int draw() {
+int draw(void) {
     ClearBackground(RAYWHITE);
 
     for(size_t i = 0; i < GRID_SIZE; i++) {
@@ -131,7 +132,7 @@ bool should_update(float seconds) {
     return false;
 }
 
-int spawn_food() {
+int spawn_food(void) {
     while(true) {
         float x = GetRandomValue(0, GRID_SIZE - 1);
         float y = GetRandomValue(0, GRID_SIZE - 1);
@@ -154,7 +155,7 @@ int spawn_food() {
     return 0;
 }
 
-int init_game() {
+int init_game(void) {
     state.food = (Vector2) { 0 };
     spawn_food();
     state.snake[0] = (Vector2) { 3, 3 };
@@ -164,7 +165,7 @@ int init_game() {
     return 0;
 }
 
-void get_input() {
+void get_input(void) {
     if(IsKeyPressed(KEY_A) && state.direction.x != 1) {
         state.direction = (Vector2) { -1, 0 };
     }
@@ -180,4 +181,14 @@ void get_input() {
     if(IsKeyPressed(KEY_S) && state.direction.y != -1) {
         state.direction = (Vector2) { 0, 1 };
     }
+}
+
+void init_raylib_window(void) {
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib");
+    SetTargetFPS(60);
+}
+
+void init_game_and_window(void) {
+    init_raylib_window();
+    init_game();
 }
