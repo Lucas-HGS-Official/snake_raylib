@@ -30,20 +30,35 @@ void update(void);
 void check_collision(void);
 void init_raylib_window(void);
 void init_game_and_window(void);
-void HandleClayErrors(Clay_ErrorData errorData);
+void handle_clay_errors(Clay_ErrorData errorData);
 
 double lastUpdate = 0;
 
 int main(void) {
     init_game_and_window();
 
+    Font fonts = GetFontDefault();
+
     while(!WindowShouldClose()) {
+
+    Clay_BeginLayout();
+
+    CLAY({
+        .id = CLAY_ID("Container"),
+        .backgroundColor = (Clay_Color) { 245, 0, 0, 255 },
+        .layout = {
+            .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW(), } }
+    }) {}
+
+    Clay_RenderCommandArray renderCommands = Clay_EndLayout();
+
         BeginDrawing();
         {
             if(should_update(0.3)) {
                 update();
             }
             get_input();
+            Clay_Raylib_Render(renderCommands, &fonts);
             draw();
         }
         EndDrawing();
@@ -190,14 +205,12 @@ void get_input(void) {
 void init_raylib_window(void) {
     Clay_Raylib_Initialize(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib", FLAG_WINDOW_RESIZABLE);
     uint64_t clayRequiredMemory = Clay_MinMemorySize();
-    Clay_Arena clayMemory = (Clay_Arena) {
-        .memory = malloc(clayRequiredMemory),
-        .capacity = clayRequiredMemory,
-    };
+    Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(clayRequiredMemory, malloc(clayRequiredMemory));
+
     Clay_Initialize(clayMemory, (Clay_Dimensions) {
         .height = GetScreenHeight(),
         .width = GetScreenWidth(),
-    }, (Clay_ErrorHandler) { HandleClayErrors });
+    }, (Clay_ErrorHandler) { handle_clay_errors });
     SetTargetFPS(60);
 }
 
@@ -206,6 +219,6 @@ void init_game_and_window(void) {
     init_game();
 }
 
-void HandleClayErrors(Clay_ErrorData errorData) {
-    printf("%s", errorData.errorText.chars);
+void handle_clay_errors(Clay_ErrorData errorData) {
+    // printf("%s", errorData.errorText.chars);
 }
