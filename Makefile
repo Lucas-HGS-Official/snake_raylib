@@ -53,9 +53,6 @@ update_emcc:
 activate_emcc:
 	~/emsdk/emsdk activate latest
 
-activate_emcc_env:
-	source ~/emsdk/emsdk_env.sh
-
 web_build:
 	emcc -o $(TARGET).html code/src/main.c -Os -Wall ./$(WEB_RAYLIB)/libraylib.a -Icode/include -Icode/libs/include -I/home/lhgs/raylib/src -L$(WEB_RAYLIB) -s USE_GLFW=3 -s ASYNCIFY -s TOTAL_MEMORY=67108864 -s STACK_SIZE=20MB -s ASSERTIONS=1 -s EXPORTED_RUNTIME_METHODS=ccall --profiling -DPLATFORM_WEB
 # --preload-file resources

@@ -22,6 +22,7 @@ typedef struct {
 State state = {0};
 
 int init_game(void);
+void game_loop(void);
 int spawn_food(void);
 int draw(void);
 bool should_update(float seconds);
@@ -37,32 +38,8 @@ double lastUpdate = 0;
 int main(void) {
     init_game_and_window();
 
-    Font fonts = GetFontDefault();
+    game_loop();
 
-    while(!WindowShouldClose()) {
-
-    Clay_BeginLayout();
-
-    CLAY({
-        .id = CLAY_ID("Container"),
-        .backgroundColor = (Clay_Color) { 245, 0, 0, 255 },
-        .layout = {
-            .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW(), } }
-    }) {}
-
-    Clay_RenderCommandArray renderCommands = Clay_EndLayout();
-
-        BeginDrawing();
-        {
-            if(should_update(0.3)) {
-                update();
-            }
-            get_input();
-            Clay_Raylib_Render(renderCommands, &fonts);
-            draw();
-        }
-        EndDrawing();
-    }
     Clay_Raylib_Close();
     
     return 0;
@@ -184,6 +161,47 @@ int init_game(void) {
     return 0;
 }
 
+void game_loop(void) {
+    Font fonts = GetFontDefault();
+
+    while (!WindowShouldClose()) {
+        Clay_BeginLayout();
+
+        CLAY({
+            .id = CLAY_ID("Container"),
+            .backgroundColor = (Clay_Color) { 245, 245, 245, 255 },
+            .layout = {
+                .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW(), },
+                .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
+                .padding = CLAY_PADDING_ALL(8),
+                .childGap = 8,
+            },
+        }) {
+            for(int i=0; i<2;i++) {
+                CLAY({
+                    .backgroundColor = (Clay_Color) { 245, 0, 0, 255 },
+                    .layout = {
+                        .sizing = { .width = CLAY_SIZING_FIXED(GRID_SIZE), .height = CLAY_SIZING_FIXED(GRID_SIZE) },
+                    },
+                }) {}
+            }
+        }
+
+        Clay_RenderCommandArray renderCommands = Clay_EndLayout();
+
+        BeginDrawing();
+        {
+            if(should_update(0.3)) {
+                update();
+            }
+            get_input();
+            Clay_Raylib_Render(renderCommands, &fonts);
+            draw();
+        }
+        EndDrawing();
+    }
+}
+
 void get_input(void) {
     if(IsKeyPressed(KEY_A) && state.direction.x != 1) {
         state.direction = (Vector2) { -1, 0 };
@@ -220,5 +238,5 @@ void init_game_and_window(void) {
 }
 
 void handle_clay_errors(Clay_ErrorData errorData) {
-    // printf("%s", errorData.errorText.chars);
+    printf("%s\n", errorData.errorText.chars);
 }
