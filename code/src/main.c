@@ -24,7 +24,7 @@ State state = {0};
 int init_game(void);
 void game_loop(void);
 int spawn_food(void);
-int draw(void);
+int game_draw(void);
 bool should_update(float seconds);
 void get_input(void);
 void update(void);
@@ -94,7 +94,7 @@ void update(void) {
     check_collision();
 }
 
-int draw(void) {
+int game_draw(void) {
     ClearBackground(RAYWHITE);
 
     for(size_t i = 0; i < GRID_SIZE; i++) {
@@ -173,30 +173,42 @@ void game_loop(void) {
             .layout = {
                 .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW(), },
                 .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
-                .padding = CLAY_PADDING_ALL(8),
-                .childGap = 8,
+                .layoutDirection = CLAY_LEFT_TO_RIGHT,
             },
         }) {
-            for(int i=0; i<2;i++) {
+            for(int i=0; i<GRID_SIZE; i++) {
                 CLAY({
-                    .backgroundColor = (Clay_Color) { 245, 0, 0, 255 },
                     .layout = {
-                        .sizing = { .width = CLAY_SIZING_FIXED(GRID_SIZE), .height = CLAY_SIZING_FIXED(GRID_SIZE) },
+                        .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
+                        .padding = { .left = 4, .right = 4},
+                        .childGap = 8,
+                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
                     },
-                }) {}
+                }
+                ) {
+                    for(int j=0; j<GRID_SIZE; j++) {
+                        CLAY({
+                            .backgroundColor = (Clay_Color) { 245, 0, 0, 255 },
+                            .layout = {
+                                .sizing = { .width = CLAY_SIZING_FIXED(GRID_SIZE), .height = CLAY_SIZING_FIXED(GRID_SIZE) },
+                            },
+                        }) {}
+                    }
+                }
             }
         }
 
         Clay_RenderCommandArray renderCommands = Clay_EndLayout();
+        
+        if(should_update(0.3)) {
+            update();
+        }
+        get_input();
 
         BeginDrawing();
         {
-            if(should_update(0.3)) {
-                update();
-            }
-            get_input();
             Clay_Raylib_Render(renderCommands, &fonts);
-            draw();
+            game_draw();
         }
         EndDrawing();
     }
