@@ -13,6 +13,8 @@
 #define GRID_SPACE 5
 #define MARGIN 10
 
+#define RAYLIB_COLOR_TO_CLAY_COLOR(ray_color) (Clay_Color) { .r = (float)(ray_color.r), .g = (float)(ray_color.g), .b = (float)(ray_color.b), .a = (float)(ray_color.a) }
+
 typedef struct {
     Vector2 direction;
     Vector2 snake[GRID_SIZE * GRID_SIZE];
@@ -188,9 +190,9 @@ void game_loop(void) {
                 ) {
                     for(int j=0; j<GRID_SIZE; j++) {
                         CLAY({
-                            .backgroundColor = (Clay_Color) { 245, 0, 0, 255 },
+                            .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(GRAY),
                             .layout = {
-                                .sizing = { .width = CLAY_SIZING_FIXED(GRID_SIZE), .height = CLAY_SIZING_FIXED(GRID_SIZE) },
+                                .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
                             },
                         }) {}
                     }
