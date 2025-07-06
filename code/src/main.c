@@ -34,6 +34,7 @@ void check_collision(void);
 void init_raylib_window(void);
 void init_game_and_window(void);
 void handle_clay_errors(Clay_ErrorData errorData);
+void game_board_clay(void);
 
 double lastUpdate = 0;
 
@@ -169,36 +170,7 @@ void game_loop(void) {
     while (!WindowShouldClose()) {
         Clay_BeginLayout();
 
-        CLAY({
-            .id = CLAY_ID("Container"),
-            .backgroundColor = (Clay_Color) { 245, 245, 245, 255 },
-            .layout = {
-                .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW(), },
-                .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
-                .layoutDirection = CLAY_LEFT_TO_RIGHT,
-            },
-        }) {
-            for(int i=0; i<GRID_SIZE; i++) {
-                CLAY({
-                    .layout = {
-                        .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
-                        .padding = { .left = 4, .right = 4},
-                        .childGap = 8,
-                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                    },
-                }
-                ) {
-                    for(int j=0; j<GRID_SIZE; j++) {
-                        CLAY({
-                            .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(GRAY),
-                            .layout = {
-                                .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
-                            },
-                        }) {}
-                    }
-                }
-            }
-        }
+        game_board_clay();
 
         Clay_RenderCommandArray renderCommands = Clay_EndLayout();
         
@@ -253,4 +225,37 @@ void init_game_and_window(void) {
 
 void handle_clay_errors(Clay_ErrorData errorData) {
     printf("%s\n", errorData.errorText.chars);
+}
+
+void game_board_clay(void) {
+    CLAY({
+        .id = CLAY_ID("Container"),
+        .backgroundColor = (Clay_Color) { 245, 245, 245, 255 },
+        .layout = {
+            .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW(), },
+            .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
+            .layoutDirection = CLAY_LEFT_TO_RIGHT,
+        },
+    }) {
+        for(int i=0; i<GRID_SIZE; i++) {
+            CLAY({
+                .layout = {
+                    .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
+                    .padding = { .left = 4, .right = 4},
+                    .childGap = 8,
+                    .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                },
+            }
+            ) {
+                for(int j=0; j<GRID_SIZE; j++) {
+                    CLAY({
+                        .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(GRAY),
+                        .layout = {
+                            .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
+                        },
+                    }) {}
+                }
+            }
+        }
+    }
 }
