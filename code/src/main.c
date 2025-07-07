@@ -98,7 +98,7 @@ void update(void) {
 }
 
 int game_draw(void) {
-    ClearBackground(RAYWHITE);
+    ClearBackground(BLACK);
 
     for(size_t i = 0; i < GRID_SIZE; i++) {
         for(size_t j = 0; j < GRID_SIZE; j++) {
@@ -182,7 +182,7 @@ void game_loop(void) {
         BeginDrawing();
         {
             Clay_Raylib_Render(renderCommands, &fonts);
-            game_draw();
+            // game_draw();
         }
         EndDrawing();
     }
@@ -237,6 +237,7 @@ void game_board_clay(void) {
             .layoutDirection = CLAY_LEFT_TO_RIGHT,
         },
     }) {
+        bool isAlreadyDrawn=false;
         for(int i=0; i<GRID_SIZE; i++) {
             CLAY({
                 .layout = {
@@ -248,12 +249,48 @@ void game_board_clay(void) {
             }
             ) {
                 for(int j=0; j<GRID_SIZE; j++) {
-                    CLAY({
-                        .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(GRAY),
-                        .layout = {
-                            .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
-                        },
-                    }) {}
+                    for(int k=0; k<state.count; k++){
+                        Vector2 currSnake = state.snake[k];
+                        if(!isAlreadyDrawn){
+                            if(i==currSnake.x && j==currSnake.y){
+                                if(k==0) {
+                                    CLAY({
+                                        .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(DARKBLUE),
+                                        .layout = {
+                                            .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
+                                        },
+                                    }) {}
+                                } else {
+                                    CLAY({
+                                        .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(BLUE),
+                                        .layout = {
+                                            .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
+                                        },
+                                    }) {}
+                                }
+                                isAlreadyDrawn=true;
+                            }
+                        }
+                    }
+
+                    if((i==state.food.x && j==state.food.y) && !isAlreadyDrawn) {
+                        CLAY({
+                            .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(RED),
+                            .layout = {
+                                .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
+                            },
+                        }) {}
+                        isAlreadyDrawn=true;
+                    }
+                    if(!isAlreadyDrawn) {
+                        CLAY({
+                            .backgroundColor = (Clay_Color) RAYLIB_COLOR_TO_CLAY_COLOR(GRAY),
+                            .layout = {
+                                .sizing = { .width = CLAY_SIZING_FIXED(GRID), .height = CLAY_SIZING_FIXED(GRID) },
+                            },
+                        }) {}
+                    }
+                    isAlreadyDrawn=false;
                 }
             }
         }
