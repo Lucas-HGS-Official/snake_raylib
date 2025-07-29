@@ -19,7 +19,7 @@ from_scratch: clean lib_build build web_build
 build: $(TARGET)
 
 $(TARGET): $(OBJ)
-	gcc -o $@ $? -Wall -std=c99 -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+	gcc -o $@ $? -Wall -std=gnu99 -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 code/obj/%.o : code/src/%.c
 	gcc -c $< -o $@ -Icode/include -Icode/libs/include
