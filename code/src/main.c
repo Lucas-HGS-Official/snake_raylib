@@ -2,6 +2,8 @@
 #include "clay.h"
 #include "clay_renderer_raylib.c"
 
+#include "flecs.h"
+
 #include "raylib.h"
 #include "raymath.h"
 #include "stddef.h"
@@ -24,7 +26,7 @@ typedef struct {
 State state = {0};
 
 int init_game(void);
-void game_loop(void);
+void game_loop(ecs_world_t* world);
 int spawn_food(void);
 int game_draw(void);
 bool should_update(float seconds);
@@ -41,11 +43,13 @@ double lastUpdate = 0;
 int main(void) {
     init_game_and_window();
 
-    game_loop();
+    ecs_world_t* world = ecs_init();
+
+    game_loop(world);
 
     Clay_Raylib_Close();
     
-    return 0;
+    return ecs_fini(world);
 }
 
 
@@ -164,7 +168,7 @@ int init_game(void) {
     return 0;
 }
 
-void game_loop(void) {
+void game_loop(ecs_world_t* world) {
     Font fonts = GetFontDefault();
 
     while (!WindowShouldClose()) {
@@ -183,6 +187,7 @@ void game_loop(void) {
         {
             Clay_Raylib_Render(renderCommands, &fonts);
             // game_draw();
+            ecs_progress(world, 0);
         }
         EndDrawing();
     }
